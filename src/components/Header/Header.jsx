@@ -1,10 +1,10 @@
 // src/components/Header/Header.jsx
-import React, { useState } from 'react';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
-import { ShoppingBag, User, Menu, X, Search, LogOut } from 'lucide-react';
-import { useAuth } from '../../contexts/AuthContext';
-import { useCart } from '../../contexts/CartContext';
+import React, { useState } from "react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
+import { ShoppingBag, User, Menu, X, Search, LogOut } from "lucide-react";
+import { useAuth } from "../../contexts/AuthContext";
+import { useCart } from "../../contexts/CartContext";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -20,15 +20,15 @@ const Header = () => {
   const handleLogout = () => {
     logout();
     setIsUserMenuOpen(false);
-    navigate('/');
+    navigate("/");
   };
 
   const navItems = [
-    { path: '/', label: 'Home' },
-    { path: '/products', label: 'Shop All' },
-    { path: '/products?category=men', label: 'Men' },
-    { path: '/products?category=women', label: 'Women' },
-    { path: '/products?category=accessories', label: 'Accessories' },
+    { path: "/", label: "Home" },
+    { path: "/products", label: "Shop All" },
+    { path: "/products?category=men", label: "Men" },
+    { path: "/products?category=women", label: "Women" },
+    { path: "/products?category=accessories", label: "Accessories" },
   ];
 
   return (
@@ -53,7 +53,10 @@ const Header = () => {
           whileHover={{ scale: 1.05 }}
           transition={{ type: "spring", stiffness: 300 }}
         >
-          <Link to="/" className="text-2xl font-bold text-gray-900 tracking-tight">
+          <Link
+            to="/"
+            className="text-2xl font-bold text-gray-900 tracking-tight"
+          >
             DUTCH LINE
           </Link>
         </motion.div>
@@ -65,9 +68,9 @@ const Header = () => {
               key={item.path}
               to={item.path}
               className={`text-gray-700 hover:text-gray-900 transition-colors duration-200 font-medium py-2 relative ${
-                location.pathname === item.path.split('?')[0]
-                  ? 'text-gray-900 after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-red-600'
-                  : ''
+                location.pathname === item.path.split("?")[0]
+                  ? "text-gray-900 after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-red-600"
+                  : ""
               }`}
             >
               {item.label}
@@ -109,7 +112,9 @@ const Header = () => {
                       exit={{ opacity: 0, y: 10 }}
                     >
                       <div className="px-4 py-2 border-b border-gray-100">
-                        <p className="text-sm font-medium text-gray-900">Hello, {user.name}</p>
+                        <p className="text-sm font-medium text-gray-900">
+                          Hello, {user.name}
+                        </p>
                         <p className="text-xs text-gray-500">{user.email}</p>
                       </div>
                       <Link
@@ -131,7 +136,10 @@ const Header = () => {
                 </AnimatePresence>
               </>
             ) : (
-              <Link to="/login" className="p-2 text-gray-600 hover:text-gray-900 transition-colors duration-200 relative rounded-lg hover:bg-gray-100">
+              <Link
+                to="/login"
+                className="p-2 text-gray-600 hover:text-gray-900 transition-colors duration-200 relative rounded-lg hover:bg-gray-100"
+              >
                 <User size={20} />
               </Link>
             )}
@@ -143,7 +151,7 @@ const Header = () => {
               className="p-2 text-gray-600 hover:text-gray-900 transition-colors duration-200 relative rounded-lg hover:bg-gray-100"
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
-              onClick={() => navigate('/cart')}
+              onClick={() => navigate("/cart")}
             >
               <ShoppingBag size={20} />
               {cartItemsCount > 0 && (
@@ -214,7 +222,7 @@ const Header = () => {
               onClick={(e) => e.stopPropagation()}
             >
               <div className="flex items-center justify-between border-b border-gray-200 pb-4 mb-6">
-                <span className="text-lg font-bold">DUTCH LINE</span>
+                <span className="text-lg font-bold">Baraa Games</span>
                 <button onClick={() => setIsMenuOpen(false)}>
                   <X size={24} />
                 </button>
