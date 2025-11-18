@@ -29,6 +29,7 @@ export const AuthProvider = ({ children }) => {
       } catch (error) {
         console.error('Auth check failed:', error);
         localStorage.removeItem('token');
+        localStorage.removeItem('user');
       }
     }
     setLoading(false);
@@ -64,6 +65,42 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  // Google OAuth methods
+  const loginWithGoogle = async () => {
+    try {
+      // Get Google OAuth URL from backend
+      const response = await authAPI.getGoogleAuthUrl();
+      const { url } = response.data;
+
+      // Redirect to Google OAuth
+      window.location.href = url;
+    } catch (error) {
+      console.error('Failed to get Google auth URL:', error);
+      return {
+        success: false,
+        error: 'Failed to initiate Google login'
+      };
+    }
+  };
+
+  const handleGoogleCallback = async (code) => {
+    try {
+      const response = await authAPI.googleCallback(code);
+      const { access_token, user: userData } = response.data;
+
+      localStorage.setItem('token', access_token);
+      localStorage.setItem('user', JSON.stringify(userData));
+      setUser(userData);
+
+      return { success: true };
+    } catch (error) {
+      return {
+        success: false,
+        error: error.response?.data?.detail || 'Google authentication failed'
+      };
+    }
+  };
+
   const logout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
@@ -75,7 +112,9 @@ export const AuthProvider = ({ children }) => {
     login,
     register,
     logout,
-    loading
+    loading,
+    loginWithGoogle,
+    handleGoogleCallback
   };
 
   return (

@@ -5,7 +5,6 @@ import { Package, Calendar, DollarSign, Eye, Truck, CheckCircle, Clock, XCircle 
 import { useAuth } from '../../contexts/AuthContext';
 import { ordersAPI } from '../../services/api';
 import LoadingSpinner from '../../components/Loading/LoadingSpinner';
-// import './Orders.css';
 
 const Orders = () => {
   const [orders, setOrders] = useState([]);
@@ -49,15 +48,15 @@ const Orders = () => {
   const getStatusColor = (status) => {
     switch (status) {
       case 'completed':
-        return 'bg-green-100 text-green-800';
+        return 'bg-green-100 text-green-800 border border-green-200';
       case 'pending':
-        return 'bg-yellow-100 text-yellow-800';
+        return 'bg-yellow-100 text-yellow-800 border border-yellow-200';
       case 'shipped':
-        return 'bg-blue-100 text-blue-800';
+        return 'bg-blue-100 text-blue-800 border border-blue-200';
       case 'cancelled':
-        return 'bg-red-100 text-red-800';
+        return 'bg-red-100 text-red-800 border border-red-200';
       default:
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-gray-100 text-gray-800 border border-gray-200';
     }
   };
 
@@ -78,35 +77,37 @@ const Orders = () => {
 
   if (loading) {
     return (
-      <div className="orders-loading">
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <LoadingSpinner size="large" text="Loading your orders..." />
       </div>
     );
   }
 
   return (
-    <div className="orders-page">
-      <div className="orders-container">
+    <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto">
         {/* Header */}
         <motion.div
-          className="orders-header"
+          className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 mb-8"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
         >
-          <div className="header-content">
-            <h1 className="page-title">My Orders</h1>
-            <p className="page-subtitle">
-              Track and manage your orders
-            </p>
-          </div>
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+            <div className="mb-4 sm:mb-0">
+              <h1 className="text-3xl font-bold text-gray-900">My Orders</h1>
+              <p className="text-gray-600 mt-2">Track and manage your orders</p>
+            </div>
 
-          <div className="orders-stats">
-            <div className="stat">
-              <Package size={24} />
-              <div>
-                <span className="stat-number">{orders.length}</span>
-                <span className="stat-label">Total Orders</span>
+            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-4 border border-blue-100">
+              <div className="flex items-center space-x-3">
+                <div className="bg-white p-2 rounded-lg shadow-sm">
+                  <Package size={24} className="text-blue-600" />
+                </div>
+                <div>
+                  <span className="block text-2xl font-bold text-gray-900">{orders.length}</span>
+                  <span className="block text-sm text-gray-600">Total Orders</span>
+                </div>
               </div>
             </div>
           </div>
@@ -115,18 +116,18 @@ const Orders = () => {
         {/* Orders List */}
         {orders.length === 0 ? (
           <motion.div
-            className="empty-orders"
+            className="bg-white rounded-2xl shadow-sm border border-gray-200 p-12 text-center"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
           >
-            <Package size={64} className="empty-icon" />
-            <h2>No orders yet</h2>
-            <p>When you place orders, they will appear here</p>
+            <Package size={64} className="mx-auto text-gray-400 mb-4" />
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">No orders yet</h2>
+            <p className="text-gray-600">When you place orders, they will appear here</p>
           </motion.div>
         ) : (
           <motion.div
-            className="orders-list"
+            className="space-y-6"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.6, delay: 0.2 }}
@@ -134,81 +135,87 @@ const Orders = () => {
             {orders.map((order, index) => (
               <motion.div
                 key={order.id}
-                className="order-card"
+                className="bg-white rounded-2xl shadow-sm border border-gray-200 hover:shadow-md transition-shadow duration-300 overflow-hidden"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
               >
                 {/* Order Header */}
-                <div className="order-header">
-                  <div className="order-info">
-                    <h3 className="order-number">Order #{order.id}</h3>
-                    <div className="order-meta">
-                      <div className="meta-item">
-                        <Calendar size={14} />
-                        <span>{formatDate(order.created_at)}</span>
-                      </div>
-                      <div className="meta-item">
-                        <DollarSign size={14} />
-                        <span>${order.total_amount}</span>
+                <div className="p-6 border-b border-gray-200">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+                    <div className="mb-4 sm:mb-0">
+                      <h3 className="text-lg font-semibold text-gray-900">Order #{order.id}</h3>
+                      <div className="flex flex-wrap items-center gap-4 mt-2">
+                        <div className="flex items-center space-x-1 text-sm text-gray-600">
+                          <Calendar size={14} />
+                          <span>{formatDate(order.created_at)}</span>
+                        </div>
+                        <div className="flex items-center space-x-1 text-sm text-gray-600">
+                          <DollarSign size={14} />
+                          <span>${order.total_amount}</span>
+                        </div>
                       </div>
                     </div>
-                  </div>
 
-                  <div className="order-status">
-                    <span className={`status-badge ${getStatusColor(order.status)}`}>
-                      {getStatusIcon(order.status)}
-                      {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
-                    </span>
+                    <div className="flex items-center space-x-2">
+                      <span className={`inline-flex items-center space-x-2 px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(order.status)}`}>
+                        {getStatusIcon(order.status)}
+                        <span>{order.status.charAt(0).toUpperCase() + order.status.slice(1)}</span>
+                      </span>
+                    </div>
                   </div>
                 </div>
 
                 {/* Order Items Preview */}
-                <div className="order-items-preview">
-                  <div className="items-grid">
+                <div className="p-6 border-b border-gray-200">
+                  <div className="space-y-3">
                     {order.items?.slice(0, 3).map((item, itemIndex) => (
-                      <div key={itemIndex} className="item-preview">
+                      <div key={itemIndex} className="flex items-center space-x-4 py-2">
                         <img
                           src={item.product?.images?.[0] || 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=100&h=100&fit=crop'}
                           alt={item.product?.title}
-                          className="item-image"
+                          className="w-12 h-12 rounded-lg object-cover bg-gray-100"
                         />
-                        <div className="item-info">
-                          <h4 className="item-title">{item.product?.title}</h4>
-                          <p className="item-quantity">Qty: {item.quantity}</p>
+                        <div className="flex-1 min-w-0">
+                          <h4 className="text-sm font-medium text-gray-900 truncate">{item.product?.title}</h4>
+                          <p className="text-sm text-gray-600">Qty: {item.quantity}</p>
                         </div>
-                        <div className="item-price">${item.price}</div>
+                        <div className="text-sm font-semibold text-gray-900">${item.price}</div>
                       </div>
                     ))}
 
                     {order.items?.length > 3 && (
-                      <div className="more-items">
-                        +{order.items.length - 3} more items
+                      <div className="text-center pt-2">
+                        <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-700">
+                          +{order.items.length - 3} more items
+                        </span>
                       </div>
                     )}
                   </div>
                 </div>
 
                 {/* Order Footer */}
-                <div className="order-footer">
-                  <div className="order-actions">
-                    <button
-                      onClick={() => handleViewOrder(order)}
-                      className="view-order-btn"
-                    >
-                      <Eye size={16} />
-                      View Details
-                    </button>
+                <div className="p-6">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
+                    <div className="flex items-center space-x-4">
+                      <button
+                        onClick={() => handleViewOrder(order)}
+                        className="inline-flex items-center space-x-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors duration-200 font-medium text-sm"
+                      >
+                        <Eye size={16} />
+                        <span>View Details</span>
+                      </button>
 
-                    {order.daftra_invoice_id && (
-                      <span className="invoice-badge">
-                        Invoice: {order.daftra_invoice_id}
-                      </span>
-                    )}
-                  </div>
+                      {order.daftra_invoice_id && (
+                        <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-purple-100 text-purple-800 border border-purple-200">
+                          Invoice: {order.daftra_invoice_id}
+                        </span>
+                      )}
+                    </div>
 
-                  <div className="order-total">
-                    Total: <strong>${order.total_amount}</strong>
+                    <div className="text-lg font-semibold text-gray-900">
+                      Total: <strong>${order.total_amount}</strong>
+                    </div>
                   </div>
                 </div>
               </motion.div>
@@ -219,76 +226,80 @@ const Orders = () => {
         {/* Order Details Modal */}
         {showOrderDetails && selectedOrder && (
           <motion.div
-            className="order-modal-overlay"
+            className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => setShowOrderDetails(false)}
           >
             <motion.div
-              className="order-modal"
+              className="bg-white rounded-2xl shadow-xl max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col"
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
               onClick={(e) => e.stopPropagation()}
             >
               {/* Modal Header */}
-              <div className="modal-header">
-                <h2 className="modal-title">Order Details</h2>
+              <div className="flex items-center justify-between p-6 border-b border-gray-200 bg-white">
+                <h2 className="text-2xl font-bold text-gray-900">Order Details</h2>
                 <button
                   onClick={() => setShowOrderDetails(false)}
-                  className="close-modal"
+                  className="text-gray-400 hover:text-gray-600 transition-colors duration-200 p-1 rounded-lg hover:bg-gray-100"
                 >
-                  <XCircle size={24} />
+                  <XCircle size={28} />
                 </button>
               </div>
 
-              {/* Order Information */}
-              <div className="modal-content">
-                <div className="order-summary">
-                  <div className="summary-row">
-                    <span>Order Number:</span>
-                    <strong>#{selectedOrder.id}</strong>
-                  </div>
-                  <div className="summary-row">
-                    <span>Order Date:</span>
-                    <span>{formatDate(selectedOrder.created_at)}</span>
-                  </div>
-                  <div className="summary-row">
-                    <span>Status:</span>
-                    <span className={`status-badge ${getStatusColor(selectedOrder.status)}`}>
-                      {getStatusIcon(selectedOrder.status)}
-                      {selectedOrder.status.charAt(0).toUpperCase() + selectedOrder.status.slice(1)}
-                    </span>
-                  </div>
-                  {selectedOrder.daftra_invoice_id && (
-                    <div className="summary-row">
-                      <span>Invoice ID:</span>
-                      <span className="invoice-id">{selectedOrder.daftra_invoice_id}</span>
+              {/* Modal Content */}
+              <div className="flex-1 overflow-y-auto p-6">
+                {/* Order Information */}
+                <div className="bg-gray-50 rounded-xl p-6 mb-6">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Order Information</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="flex justify-between items-center py-2 border-b border-gray-200">
+                      <span className="text-gray-600">Order Number:</span>
+                      <strong className="text-gray-900">#{selectedOrder.id}</strong>
                     </div>
-                  )}
+                    <div className="flex justify-between items-center py-2 border-b border-gray-200">
+                      <span className="text-gray-600">Order Date:</span>
+                      <span className="text-gray-900">{formatDate(selectedOrder.created_at)}</span>
+                    </div>
+                    <div className="flex justify-between items-center py-2 border-b border-gray-200">
+                      <span className="text-gray-600">Status:</span>
+                      <span className={`inline-flex items-center space-x-2 px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(selectedOrder.status)}`}>
+                        {getStatusIcon(selectedOrder.status)}
+                        <span>{selectedOrder.status.charAt(0).toUpperCase() + selectedOrder.status.slice(1)}</span>
+                      </span>
+                    </div>
+                    {selectedOrder.daftra_invoice_id && (
+                      <div className="flex justify-between items-center py-2 border-b border-gray-200">
+                        <span className="text-gray-600">Invoice ID:</span>
+                        <span className="font-medium text-purple-600">{selectedOrder.daftra_invoice_id}</span>
+                      </div>
+                    )}
+                  </div>
                 </div>
 
                 {/* Order Items */}
-                <div className="order-items-details">
-                  <h3 className="section-title">Order Items</h3>
-                  <div className="items-list">
+                <div className="mb-6">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Order Items</h3>
+                  <div className="space-y-4">
                     {selectedOrder.items?.map((item, index) => (
-                      <div key={index} className="order-item-detail">
+                      <div key={index} className="flex items-center space-x-4 p-4 bg-white border border-gray-200 rounded-lg">
                         <img
-                          src={item.product?.images?.[0]}
+                          src={item.product?.images?.[0] || 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=100&h=100&fit=crop'}
                           alt={item.product?.title}
-                          className="item-image"
+                          className="w-16 h-16 rounded-lg object-cover bg-gray-100"
                         />
-                        <div className="item-details">
-                          <h4 className="item-title">{item.product?.title}</h4>
-                          <p className="item-category">{item.product?.category?.name}</p>
-                          <p className="item-sku">SKU: {item.product?.sku}</p>
+                        <div className="flex-1 min-w-0">
+                          <h4 className="font-medium text-gray-900">{item.product?.title}</h4>
+                          <p className="text-sm text-gray-600">{item.product?.category?.name}</p>
+                          <p className="text-sm text-gray-500">SKU: {item.product?.sku}</p>
                         </div>
-                        <div className="item-quantity-price">
-                          <span className="quantity">Qty: {item.quantity}</span>
-                          <span className="price">${item.price}</span>
-                          <span className="total">${(item.price * item.quantity).toFixed(2)}</span>
+                        <div className="text-right space-y-1">
+                          <div className="text-sm text-gray-600">Qty: {item.quantity}</div>
+                          <div className="font-medium text-gray-900">${item.price}</div>
+                          <div className="font-semibold text-gray-900">${(item.price * item.quantity).toFixed(2)}</div>
                         </div>
                       </div>
                     ))}
@@ -296,35 +307,38 @@ const Orders = () => {
                 </div>
 
                 {/* Order Total */}
-                <div className="order-total-summary">
-                  <div className="total-row">
-                    <span>Subtotal:</span>
-                    <span>${selectedOrder.total_amount}</span>
-                  </div>
-                  <div className="total-row">
-                    <span>Shipping:</span>
-                    <span>FREE</span>
-                  </div>
-                  <div className="total-row">
-                    <span>Tax:</span>
-                    <span>${(selectedOrder.total_amount * 0.08).toFixed(2)}</span>
-                  </div>
-                  <div className="total-row final">
-                    <span>Total:</span>
-                    <span>${(selectedOrder.total_amount * 1.08).toFixed(2)}</span>
+                <div className="bg-gray-50 rounded-xl p-6">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Order Summary</h3>
+                  <div className="space-y-3">
+                    <div className="flex justify-between items-center">
+                      <span className="text-gray-600">Subtotal:</span>
+                      <span className="text-gray-900">${selectedOrder.total_amount}</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-gray-600">Shipping:</span>
+                      <span className="text-green-600 font-medium">FREE</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-gray-600">Tax:</span>
+                      <span className="text-gray-900">${(selectedOrder.total_amount * 0.08).toFixed(2)}</span>
+                    </div>
+                    <div className="flex justify-between items-center pt-3 border-t border-gray-200">
+                      <span className="text-lg font-semibold text-gray-900">Total:</span>
+                      <span className="text-lg font-bold text-gray-900">${(selectedOrder.total_amount * 1.08).toFixed(2)}</span>
+                    </div>
                   </div>
                 </div>
               </div>
 
               {/* Modal Actions */}
-              <div className="modal-actions">
+              <div className="flex items-center justify-end space-x-4 p-6 border-t border-gray-200 bg-gray-50">
                 <button
                   onClick={() => setShowOrderDetails(false)}
-                  className="btn-secondary"
+                  className="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors duration-200 font-medium"
                 >
                   Close
                 </button>
-                <button className="btn-primary">
+                <button className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors duration-200 font-medium">
                   Download Invoice
                 </button>
               </div>

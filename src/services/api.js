@@ -37,6 +37,9 @@ export const authAPI = {
   login: (credentials) => api.post('/api/auth/login', credentials),
   register: (userData) => api.post('/api/auth/register', userData),
   getMe: () => api.get('/api/auth/me'),
+  // Google OAuth endpoints
+  getGoogleAuthUrl: () => api.get('/api/auth/google/url'),
+  googleCallback: (code) => api.post('/api/auth/google/callback', { code }),
 };
 
 // Products API

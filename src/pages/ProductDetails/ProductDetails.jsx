@@ -8,7 +8,6 @@ import LoadingSpinner from '../../components/Loading/LoadingSpinner';
 import { productsAPI } from '../../services/api';
 import { useCart } from '../../contexts/CartContext';
 import { useAuth } from '../../contexts/AuthContext';
-// import './ProductDetails.css';
 
 const ProductDetails = () => {
   const { id } = useParams();
@@ -56,15 +55,9 @@ const ProductDetails = () => {
       navigate('/login');
       return;
     }
-
     const result = await addToCart(product.id, quantity);
-    if (result.success) {
-      // Show success notification
-      console.log('Added to cart successfully');
-    } else {
-      // Show error notification
-      console.error('Failed to add to cart:', result.error);
-    }
+    if (result.success) console.log('Added to cart successfully');
+    else console.error('Failed to add to cart:', result.error);
   };
 
   const handleQuantityChange = (change) => {
@@ -86,85 +79,59 @@ const ProductDetails = () => {
         console.log('Error sharing:', error);
       }
     } else {
-      // Fallback: copy to clipboard
       navigator.clipboard.writeText(window.location.href);
-      // Show copied notification
     }
   };
 
-  if (loading) {
-    return (
-      <div className="product-details-loading">
-        <LoadingSpinner size="large" text="Loading product details..." />
-      </div>
-    );
-  }
+  if (loading) return (
+    <div className="flex justify-center items-center py-16">
+      <LoadingSpinner size="large" text="Loading product details..." />
+    </div>
+  );
 
-  if (!product) {
-    return (
-      <div className="product-not-found">
-        <h2>Product not found</h2>
-        <Link to="/products" className="btn-primary">
-          Back to Products
-        </Link>
-      </div>
-    );
-  }
+  if (!product) return (
+    <div className="text-center py-16">
+      <h2 className="text-2xl font-semibold">Product not found</h2>
+      <Link to="/products" className="mt-4 inline-block px-6 py-3 bg-red-600 text-white rounded-lg">Back to Products</Link>
+    </div>
+  );
 
-  const images = product.images || [
-    'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=800&h=800&fit=crop'
-  ];
+  const images = product.images || ['https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=800&h=800&fit=crop'];
 
   return (
-    <div className="product-details">
-      <div className="product-details-container">
+    <div className="min-h-screen bg-gray-50 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Breadcrumb */}
-        <nav className="breadcrumb">
-          <Link to="/" className="breadcrumb-link">Home</Link>
-          <span className="breadcrumb-separator">/</span>
-          <Link to="/products" className="breadcrumb-link">Products</Link>
-          <span className="breadcrumb-separator">/</span>
-          <span className="breadcrumb-current">{product.title}</span>
+        <nav className="text-sm mb-4">
+          <Link to="/" className="text-gray-600 hover:text-gray-900">Home</Link>
+          <span className="mx-2">/</span>
+          <Link to="/products" className="text-gray-600 hover:text-gray-900">Products</Link>
+          <span className="mx-2">/</span>
+          <span className="text-gray-900">{product.title}</span>
         </nav>
 
         {/* Back Button */}
-        <button
-          onClick={() => navigate(-1)}
-          className="back-btn"
-        >
-          <ArrowLeft size={20} />
-          Back
+        <button onClick={() => navigate(-1)} className="flex items-center mb-6 text-gray-600 hover:text-gray-900">
+          <ArrowLeft size={20} className="mr-2"/> Back
         </button>
 
-        {/* Product Main Section */}
-        <div className="product-main">
+        <div className="flex flex-col lg:flex-row gap-8">
           {/* Image Gallery */}
-          <div className="product-gallery">
-            <div className="main-image">
-              <motion.img
-                key={selectedImage}
-                src={images[selectedImage]}
-                alt={product.title}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.3 }}
-                className="main-image-img"
-              />
-            </div>
-
+          <div className="w-full lg:w-1/2">
+            <motion.img
+              key={selectedImage}
+              src={images[selectedImage]}
+              alt={product.title}
+              className="w-full rounded-xl object-cover"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.3 }}
+            />
             {images.length > 1 && (
-              <div className="image-thumbnails">
-                {images.map((image, index) => (
-                  <button
-                    key={index}
-                    className={`thumbnail-btn ${selectedImage === index ? 'active' : ''}`}
-                    onClick={() => setSelectedImage(index)}
-                  >
-                    <img
-                      src={image}
-                      alt={`${product.title} ${index + 1}`}
-                      className="thumbnail-img"
-                    />
+              <div className="flex mt-4 space-x-2">
+                {images.map((img, index) => (
+                  <button key={index} onClick={() => setSelectedImage(index)} className={`border rounded-lg overflow-hidden ${selectedImage === index ? 'border-red-500' : 'border-gray-200'}`}>
+                    <img src={img} alt={index} className="w-16 h-16 object-cover"/>
                   </button>
                 ))}
               </div>
@@ -172,248 +139,128 @@ const ProductDetails = () => {
           </div>
 
           {/* Product Info */}
-          <div className="product-info">
-            <motion.div
-              className="product-header"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-            >
-              <h1 className="product-title">{product.title}</h1>
-
-              <div className="product-meta">
-                <div className="rating">
-                  <div className="rating-stars">
-                    {[1, 2, 3, 4, 5].map((star) => (
-                      <Star
-                        key={star}
-                        size={16}
-                        className={`rating-star ${
-                          star <= (product.rating || 4) ? 'filled' : ''
-                        }`}
-                        fill="currentColor"
-                      />
-                    ))}
-                  </div>
-                  <span className="rating-text">
-                    {product.rating || 4.0} • {product.reviewCount || 24} reviews
-                  </span>
-                </div>
-
-                <div className="product-sku">
-                  SKU: {product.sku || 'N/A'}
-                </div>
+          <div className="w-full lg:w-1/2 flex flex-col gap-4">
+            {/* Title & Rating */}
+            <h1 className="text-3xl font-bold">{product.title}</h1>
+            {product.rating && (
+              <div className="flex items-center gap-2">
+                {[1,2,3,4,5].map(star => (
+                  <Star key={star} size={16} className={`fill-current ${star <= product.rating ? 'text-yellow-400' : 'text-gray-300'}`} />
+                ))}
+                <span className="text-gray-600">{product.rating} • {product.reviewCount || 0} reviews</span>
               </div>
+            )}
 
-              <div className="product-price-section">
-                <span className="current-price">${product.price}</span>
-                {product.originalPrice && (
-                  <span className="original-price">${product.originalPrice}</span>
-                )}
-                {product.discount && (
-                  <span className="discount-badge">{product.discount}% OFF</span>
-                )}
-              </div>
-            </motion.div>
+            {/* Price */}
+            <div className="flex items-center gap-2">
+              <span className="text-2xl font-bold">${product.price}</span>
+              {product.originalPrice && <span className="line-through text-gray-400">${product.originalPrice}</span>}
+              {product.discount && <span className="bg-red-100 text-red-700 px-2 py-1 rounded">{product.discount}% OFF</span>}
+            </div>
 
-            <motion.div
-              className="product-description"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.1 }}
-            >
-              <p>{product.description}</p>
-            </motion.div>
-
-            {/* Stock Status */}
-            <motion.div
-              className="stock-status"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-            >
+            {/* Stock */}
+            <div>
               {product.stock > 0 ? (
-                <div className="in-stock">
-                  <div className="stock-indicator"></div>
-                  {product.stock < 10 ? `Only ${product.stock} left in stock` : 'In Stock'}
-                </div>
+                <span className={`px-2 py-1 rounded ${product.stock < 10 ? 'bg-yellow-100 text-yellow-800' : 'bg-green-100 text-green-800'}`}>
+                  {product.stock < 10 ? `Only ${product.stock} left` : 'In Stock'}
+                </span>
               ) : (
-                <div className="out-of-stock">Out of Stock</div>
+                <span className="px-2 py-1 rounded bg-gray-100 text-gray-500">Out of Stock</span>
               )}
-            </motion.div>
+            </div>
+
+            {/* Material & Sizes */}
+            <div className="flex gap-4 mt-4">
+              {product.Material && (
+                <div>
+                  <span className="font-semibold">Material:</span> {product.Material}
+                </div>
+              )}
+              {product.Sizes && (
+                <div>
+                  <span className="font-semibold">Sizes:</span> {product.Sizes.join(', ')}
+                </div>
+              )}
+            </div>
 
             {/* Quantity Selector */}
-            <motion.div
-              className="quantity-selector"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.3 }}
-            >
-              <label className="quantity-label">Quantity:</label>
-              <div className="quantity-controls">
-                <button
-                  className="quantity-btn"
-                  onClick={() => handleQuantityChange(-1)}
-                  disabled={quantity <= 1}
-                >
-                  <Minus size={16} />
-                </button>
-                <span className="quantity-display">{quantity}</span>
-                <button
-                  className="quantity-btn"
-                  onClick={() => handleQuantityChange(1)}
-                  disabled={quantity >= (product.stock || 10)}
-                >
-                  <Plus size={16} />
-                </button>
-              </div>
-            </motion.div>
+            <div className="flex items-center gap-2 mt-4">
+              <span className="font-semibold">Quantity:</span>
+              <button className="border px-2 py-1 rounded" onClick={() => handleQuantityChange(-1)} disabled={quantity <= 1}><Minus size={14}/></button>
+              <span className="px-3">{quantity}</span>
+              <button className="border px-2 py-1 rounded" onClick={() => handleQuantityChange(1)} disabled={quantity >= (product.stock || 10)}><Plus size={14}/></button>
+            </div>
 
             {/* Action Buttons */}
-            <motion.div
-              className="action-buttons"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.4 }}
-            >
-              <button
-                className="add-to-cart-btn primary"
-                onClick={handleAddToCart}
-                disabled={!product.stock || product.stock === 0}
-              >
-                Add to Cart
-              </button>
+            <div className="flex gap-4 mt-4">
+              <button className="bg-red-600 text-white px-6 py-2 rounded-lg hover:bg-red-700" onClick={handleAddToCart} disabled={!product.stock}>Add to Cart</button>
+              <button className="bg-gray-200 px-6 py-2 rounded-lg hover:bg-gray-300" disabled={!product.stock}>Buy Now</button>
+            </div>
 
-              <button
-                className="buy-now-btn"
-                disabled={!product.stock || product.stock === 0}
-              >
-                Buy Now
-              </button>
-            </motion.div>
-
-            {/* Secondary Actions */}
-            <motion.div
-              className="secondary-actions"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.5 }}
-            >
-              <button
-                className="action-btn wishlist-btn"
-                onClick={() => setIsWishlisted(!isWishlisted)}
-              >
-                <Heart
-                  size={20}
-                  fill={isWishlisted ? 'currentColor' : 'none'}
-                />
+            {/* Wishlist & Share */}
+            <div className="flex gap-4 mt-2">
+              <button onClick={() => setIsWishlisted(!isWishlisted)} className="flex items-center gap-2 text-gray-600 hover:text-red-600">
+                <Heart size={20} fill={isWishlisted ? 'currentColor' : 'none'}/>
                 {isWishlisted ? 'Wishlisted' : 'Add to Wishlist'}
               </button>
-
-              <button
-                className="action-btn share-btn"
-                onClick={handleShare}
-              >
-                <Share2 size={20} />
-                Share
+              <button onClick={handleShare} className="flex items-center gap-2 text-gray-600 hover:text-gray-900">
+                <Share2 size={20}/> Share
               </button>
-            </motion.div>
+            </div>
 
             {/* Features */}
-            <motion.div
-              className="product-features"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.6 }}
-            >
-              <div className="feature">
-                <Truck size={20} />
-                <span>Free shipping on orders over $100</span>
-              </div>
-              <div className="feature">
-                <Shield size={20} />
-                <span>2-year warranty included</span>
-              </div>
-            </motion.div>
+            <div className="flex gap-4 mt-4 text-gray-600">
+              <div className="flex items-center gap-1"><Truck size={20}/> Free shipping over $100</div>
+              <div className="flex items-center gap-1"><Shield size={20}/> 2-year warranty</div>
+            </div>
           </div>
         </div>
 
-        {/* Product Tabs */}
-        <div className="product-tabs">
-          <div className="tabs-header">
-            {['description', 'specifications', 'reviews', 'shipping'].map((tab) => (
-              <button
-                key={tab}
-                className={`tab-btn ${activeTab === tab ? 'active' : ''}`}
-                onClick={() => setActiveTab(tab)}
-              >
+        {/* Tabs */}
+        <div className="mt-8">
+          <div className="flex gap-4 border-b">
+            {['description', 'specifications', 'reviews', 'shipping'].map(tab => (
+              <button key={tab} onClick={() => setActiveTab(tab)}
+                className={`px-4 py-2 -mb-px ${activeTab === tab ? 'border-b-2 border-red-600 font-semibold text-red-600' : 'text-gray-600 hover:text-gray-900'}`}>
                 {tab.charAt(0).toUpperCase() + tab.slice(1)}
               </button>
             ))}
           </div>
 
-          <div className="tabs-content">
+          <div className="mt-4">
             {activeTab === 'description' && (
-              <div className="tab-panel">
-                <h3>Product Description</h3>
+              <div>
                 <p>{product.description}</p>
-                <p>Experience premium quality and exceptional comfort with this carefully crafted product. Designed to meet the highest standards of excellence.</p>
               </div>
             )}
-
             {activeTab === 'specifications' && (
-              <div className="tab-panel">
-                <h3>Specifications</h3>
-                <div className="specs-grid">
-                  <div className="spec-item">
-                    <span className="spec-label">Material</span>
-                    <span className="spec-value">Premium Cotton</span>
-                  </div>
-                  <div className="spec-item">
-                    <span className="spec-label">Color</span>
-                    <span className="spec-value">As shown</span>
-                  </div>
-                  <div className="spec-item">
-                    <span className="spec-label">Size</span>
-                    <span className="spec-value">One Size</span>
-                  </div>
-                  <div className="spec-item">
-                    <span className="spec-label">Care</span>
-                    <span className="spec-value">Machine wash cold</span>
-                  </div>
-                </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {product.Material && (
+                  <div><span className="font-semibold">Material:</span> {product.Material}</div>
+                )}
+                {product.Sizes && (
+                  <div><span className="font-semibold">Sizes:</span> {product.Sizes.join(', ')}</div>
+                )}
+                <div><span className="font-semibold">SKU:</span> {product.sku}</div>
               </div>
             )}
-
             {activeTab === 'reviews' && (
-              <div className="tab-panel">
-                <h3>Customer Reviews</h3>
-                <p>No reviews yet. Be the first to review this product!</p>
-              </div>
+              <div>No reviews yet. Be the first to review!</div>
             )}
-
             {activeTab === 'shipping' && (
-              <div className="tab-panel">
-                <h3>Shipping & Returns</h3>
-                <p>Free standard shipping on orders over $100. Express shipping available. 30-day return policy.</p>
-              </div>
+              <div>Free standard shipping on orders over $100. 30-day return policy.</div>
             )}
           </div>
         </div>
 
         {/* Related Products */}
         {relatedProducts.length > 0 && (
-          <section className="related-products">
-            <h2 className="section-title">You May Also Like</h2>
-            <div className="related-products-grid">
-              {relatedProducts.map((relatedProduct) => (
-                <ProductCard
-                  key={relatedProduct.id}
-                  product={relatedProduct}
-                />
-              ))}
+          <div className="mt-8">
+            <h2 className="text-2xl font-semibold mb-4">You May Also Like</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              {relatedProducts.map(p => <ProductCard key={p.id} product={p} />)}
             </div>
-          </section>
+          </div>
         )}
       </div>
     </div>
